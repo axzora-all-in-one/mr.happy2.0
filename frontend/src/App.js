@@ -8,7 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import ResponsiveLayout from "./components/layout/ResponsiveLayout";
 
 // Pages
-import Dashboard from "./pages/Dashboard";
+import EnhancedDashboard from "./pages/EnhancedDashboard";
 import Travel from "./pages/Travel";
 import Recharge from "./pages/Recharge";
 import ShopUpdated from "./pages/ShopUpdated";
@@ -30,7 +30,7 @@ const App = () => {
               <ResponsiveLayout>
                 <Routes>
                   {/* Main Pages */}
-                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/" element={<EnhancedDashboard />} />
                   <Route path="/travel" element={<Travel />} />
                   <Route path="/recharge" element={<Recharge />} />
                   <Route path="/shop" element={<ShopUpdated />} />
