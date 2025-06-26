@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "./components/ui/toaster";
 import { UserProvider } from "./contexts/UserContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
-import Header from "./components/layout/Header";
-import Sidebar from "./components/layout/Sidebar";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import ResponsiveLayout from "./components/layout/ResponsiveLayout";
+
+// Pages
 import Dashboard from "./pages/Dashboard";
 import Travel from "./pages/Travel";
 import Recharge from "./pages/Recharge";
@@ -15,56 +17,120 @@ import VirtualCards from "./pages/VirtualCards";
 import AutomationHub from "./components/automation/AutomationHub";
 import AnalyticsDashboard from "./components/analytics/AnalyticsDashboard";
 
+// Placeholder pages for "Coming Soon" items
+import ComingSoonPage from "./components/ui/ComingSoonPage";
+
 const App = () => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [isVoiceListening, setIsVoiceListening] = useState(false);
-
-  const handleVoiceToggle = () => {
-    setIsVoiceListening(!isVoiceListening);
-  };
-
   return (
     <div className="App">
-      <UserProvider>
-        <AnalyticsProvider>
-          <BrowserRouter>
-            <div className="flex h-screen bg-background">
-              {/* Sidebar */}
-              <Sidebar collapsed={sidebarCollapsed} />
-              
-              {/* Main Content */}
-              <div className="flex-1 flex flex-col overflow-hidden">
-                {/* Header */}
-                <Header 
-                  onVoiceToggle={handleVoiceToggle}
-                  isListening={isVoiceListening}
-                />
-                
-                {/* Page Content */}
-                <main className="flex-1 overflow-y-auto bg-gray-50/30">
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/travel" element={<Travel />} />
-                    <Route path="/recharge" element={<Recharge />} />
-                    <Route path="/shop" element={<ShopUpdated />} />
-                    <Route path="/wallet" element={<WalletUpdated />} />
-                    <Route path="/virtual-cards" element={<VirtualCards />} />
-                    <Route path="/automation" element={<AutomationHub userId="43f08807-ea8e-4f96-ab9b-4b529b4b7475" />} />
-                    <Route path="/git" element={<div className="p-6"><h1 className="text-2xl font-bold">Git Activity Coming Soon</h1></div>} />
-                    <Route path="/weather" element={<div className="p-6"><h1 className="text-2xl font-bold">Weather Details Coming Soon</h1></div>} />
-                    <Route path="/analytics" element={<AnalyticsDashboard />} />
-                  <Route path="/payments" element={<div className="p-6"><h1 className="text-2xl font-bold">Payment History Coming Soon</h1></div>} />
-                  <Route path="/settings" element={<div className="p-6"><h1 className="text-2xl font-bold">Settings Panel Coming Soon</h1></div>} />
+      <ThemeProvider>
+        <UserProvider>
+          <AnalyticsProvider>
+            <BrowserRouter>
+              <ResponsiveLayout>
+                <Routes>
+                  {/* Main Pages */}
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/travel" element={<Travel />} />
+                  <Route path="/recharge" element={<Recharge />} />
+                  <Route path="/shop" element={<ShopUpdated />} />
+                  <Route path="/wallet" element={<WalletUpdated />} />
+                  <Route path="/virtual-cards" element={<VirtualCards />} />
+                  <Route path="/automation" element={<AutomationHub userId="43f08807-ea8e-4f96-ab9b-4b529b4b7475" />} />
+                  <Route path="/analytics" element={<AnalyticsDashboard />} />
+                  
+                  {/* Coming Soon Pages with Enhanced UI */}
+                  <Route 
+                    path="/git" 
+                    element={
+                      <ComingSoonPage 
+                        title="Git Activity" 
+                        description="Development tracking and version control insights"
+                        icon="GitBranch"
+                        features={[
+                          "Real-time commit tracking",
+                          "Code contribution analytics", 
+                          "Branch management insights",
+                          "Team collaboration metrics"
+                        ]}
+                      />
+                    } 
+                  />
+                  <Route 
+                    path="/weather" 
+                    element={
+                      <ComingSoonPage 
+                        title="Weather Intelligence" 
+                        description="AI-powered weather forecasts and travel planning"
+                        icon="Cloud"
+                        features={[
+                          "Hyperlocal weather forecasts",
+                          "Travel weather insights",
+                          "Weather-based recommendations",
+                          "Climate impact analysis"
+                        ]}
+                      />
+                    } 
+                  />
+                  <Route 
+                    path="/payments" 
+                    element={
+                      <ComingSoonPage 
+                        title="Payment History" 
+                        description="Comprehensive transaction management and insights"
+                        icon="CreditCard"
+                        features={[
+                          "Advanced transaction filtering",
+                          "Spending pattern analysis",
+                          "Receipt management",
+                          "Tax reporting tools"
+                        ]}
+                      />
+                    } 
+                  />
+                  <Route 
+                    path="/settings" 
+                    element={
+                      <ComingSoonPage 
+                        title="Settings Panel" 
+                        description="Personalized app configuration and preferences"
+                        icon="Settings"
+                        features={[
+                          "Account customization",
+                          "Privacy & security settings",
+                          "Notification preferences",
+                          "Integration management"
+                        ]}
+                      />
+                    } 
+                  />
+                  
+                  {/* More Page for Mobile Navigation */}
+                  <Route 
+                    path="/more" 
+                    element={
+                      <ComingSoonPage 
+                        title="More Services" 
+                        description="Additional features and integrations"
+                        icon="Grid"
+                        features={[
+                          "Banking services",
+                          "Investment tools",
+                          "Insurance products",
+                          "Third-party integrations"
+                        ]}
+                      />
+                    } 
+                  />
                 </Routes>
-              </main>
-            </div>
-          </div>
-          
-          {/* Toast Notifications */}
-          <Toaster />
-        </BrowserRouter>
-        </AnalyticsProvider>
-      </UserProvider>
+              </ResponsiveLayout>
+            </BrowserRouter>
+            
+            {/* Enhanced Toast Notifications */}
+            <Toaster />
+          </AnalyticsProvider>
+        </UserProvider>
+      </ThemeProvider>
     </div>
   );
 };
