@@ -1,0 +1,161 @@
+{
+  "success": true,
+  "flights": [
+    {
+      "id": "1",
+      "price": {
+        "total_price": 25000.0,
+        "base_price": 22000.0,
+        "currency": "INR",
+        "taxes": [],
+        "fees": [
+          {
+            "type": "SUPPLIER",
+            "amount": 1000.0
+          },
+          {
+            "type": "TICKETING",
+            "amount": 2000.0
+          }
+        ],
+        "happy_paisa": {
+          "amount": 25.0,
+          "currency": "HP",
+          "conversion_rate": 1000
+        }
+      },
+      "itineraries": [
+        {
+          "departure": {
+            "airport": "DEL",
+            "terminal": null,
+            "time": "2025-02-15T06:00:00"
+          },
+          "arrival": {
+            "airport": "GOA",
+            "terminal": null,
+            "time": "2025-02-15T11:30:00"
+          },
+          "carrier": "AI",
+          "flight_number": "123",
+          "aircraft": "320",
+          "duration": "PT5H30M",
+          "cabin_class": "ECONOMY"
+        }
+      ],
+      "duration": "PT5H30M",
+      "stops": 0,
+      "luxury_features": {
+        "cabin_amenities": [],
+        "meal_service": "Standard",
+        "entertainment": "Available",
+        "wifi": "Available",
+        "seat_pitch": "Standard",
+        "baggage_allowance": "23kg"
+      },
+      "booking_class": "ECONOMY",
+      "instant_pricing": true,
+      "change_fees": "Included in fare rules",
+      "validity": "24 hours",
+      "last_ticketing_date": null,
+      "traveler_pricings": [
+        {
+          "travelerId": "1",
+          "fareOption": "STANDARD",
+          "travelerType": "ADULT",
+          "price": {
+            "total": "25000",
+            "currency": "INR"
+          }
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "price": {
+        "total_price": 30000.0,
+        "base_price": 27000.0,
+        "currency": "INR",
+        "taxes": [],
+        "fees": [
+          {
+            "type": "SUPPLIER",
+            "amount": 1500.0
+          },
+          {
+            "type": "TICKETING",
+            "amount": 1500.0
+          }
+        ],
+        "happy_paisa": {
+          "amount": 30.0,
+          "currency": "HP",
+          "conversion_rate": 1000
+        }
+      },
+      "itineraries": [
+        {
+          "departure": {
+            "airport": "DEL",
+            "terminal": null,
+            "time": "2025-02-15T08:00:00"
+          },
+          "arrival": {
+            "airport": "GOA",
+            "terminal": null,
+            "time": "2025-02-15T12:30:00"
+          },
+          "carrier": "6E",
+          "flight_number": "456",
+          "aircraft": "320",
+          "duration": "PT4H30M",
+          "cabin_class": "ECONOMY"
+        }
+      ],
+      "duration": "PT4H30M",
+      "stops": 0,
+      "luxury_features": {
+        "cabin_amenities": [],
+        "meal_service": "Standard",
+        "entertainment": "Available",
+        "wifi": "Available",
+        "seat_pitch": "Standard",
+        "baggage_allowance": "23kg"
+      },
+      "booking_class": "ECONOMY",
+      "instant_pricing": true,
+      "change_fees": "Included in fare rules",
+      "validity": "24 hours",
+      "last_ticketing_date": null,
+      "traveler_pricings": [
+        {
+          "travelerId": "1",
+          "fareOption": "STANDARD",
+          "travelerType": "ADULT",
+          "price": {
+            "total": "30000",
+            "currency": "INR"
+          }
+        }
+      ]
+    }
+  ],
+  "total_results": 2,
+  "search_params": {
+    "originLocationCode": "DEL",
+    "destinationLocationCode": "GOA",
+    "departureDate": "2025-07-27",
+    "adults": 1,
+    "max": 10,
+    "currencyCode": "INR",
+    "travelClass": "ECONOMY"
+  },
+  "currency": "INR",
+  "luxury_metadata": {
+    "search_time": "2025-06-27T07:55:48.644598",
+    "price_guarantee": "24 hours",
+    "booking_protection": "Full refund within 24 hours",
+    "customer_support": "24/7 Premium Support",
+    "loyalty_benefits": "Earn Happy Paisa rewards"
+  }
+}

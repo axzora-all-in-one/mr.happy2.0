@@ -1,0 +1,241 @@
+{
+  "success": true,
+  "hotels": [
+    {
+      "id": "1",
+      "hotel": {
+        "name": "Luxury Resort & Spa",
+        "hotel_id": "LUXGOA1",
+        "chain_code": "LUX",
+        "iata_code": "GOA",
+        "address": {
+          "lines": [
+            "Beach Road"
+          ],
+          "cityName": "Goa",
+          "countryCode": "IN"
+        },
+        "contact": {
+          "phone": "+91 123 456 7890",
+          "email": "info@luxuryresort.com"
+        },
+        "description": {
+          "text": "A luxury beachfront resort with world-class amenities"
+        }
+      },
+      "offers": [
+        {
+          "id": "1",
+          "price": {
+            "total": 35000.0,
+            "base": 30000.0,
+            "currency": "INR",
+            "taxes": [],
+            "variations": [],
+            "happy_paisa": {
+              "amount": 35.0,
+              "currency": "HP",
+              "conversion_rate": 1000
+            }
+          },
+          "room": {
+            "type": "DELUXE",
+            "type_estimated": {
+              "category": "DELUXE",
+              "beds": 1,
+              "bedType": "KING"
+            },
+            "description": {
+              "text": "Deluxe room with ocean view"
+            }
+          },
+          "guests": {
+            "adults": 2
+          },
+          "policies": {
+            "cancellation": {
+              "description": "Free cancellation until 24 hours before check-in"
+            }
+          },
+          "self_check_in": null,
+          "booking_metadata": null
+        }
+      ],
+      "luxury_features": {
+        "star_rating": 5,
+        "amenities": [
+          "Free WiFi",
+          "Swimming Pool",
+          "Fitness Center",
+          "Room Service",
+          "Concierge",
+          "Business Center",
+          "Spa & Wellness",
+          "Valet Parking",
+          "Butler Service",
+          "Private Beach Access",
+          "Golf Course",
+          "Executive Lounge"
+        ],
+        "room_features": [
+          "Air Conditioning",
+          "Minibar",
+          "Safe",
+          "Television",
+          "Bathroom",
+          "Premium Bedding",
+          "Marble Bathroom",
+          "City/Ocean View",
+          "Premium Toiletries",
+          "Bathrobes & Slippers"
+        ],
+        "services": [
+          "24/7 Reception",
+          "Housekeeping",
+          "Laundry Service",
+          "Wake-up Service"
+        ],
+        "dining": [
+          "Restaurant",
+          "Bar",
+          "Room Service"
+        ]
+      },
+      "instant_booking": true,
+      "cancellation_policy": "Flexible",
+      "payment_options": [
+        "Credit Card",
+        "Happy Paisa Wallet"
+      ],
+      "rating_score": 4.5,
+      "reviews_count": 1250
+    },
+    {
+      "id": "2",
+      "hotel": {
+        "name": "Grand Hyatt Goa",
+        "hotel_id": "HYAGOA1",
+        "chain_code": "HYA",
+        "iata_code": "GOA",
+        "address": {
+          "lines": [
+            "Bambolim Bay"
+          ],
+          "cityName": "Goa",
+          "countryCode": "IN"
+        },
+        "contact": {
+          "phone": "+91 832 301 1234",
+          "email": "goa.grand@hyatt.com"
+        },
+        "description": {
+          "text": "A 5-star luxury resort set on the shores of Bambolim Bay"
+        }
+      },
+      "offers": [
+        {
+          "id": "2",
+          "price": {
+            "total": 45000.0,
+            "base": 40000.0,
+            "currency": "INR",
+            "taxes": [],
+            "variations": [],
+            "happy_paisa": {
+              "amount": 45.0,
+              "currency": "HP",
+              "conversion_rate": 1000
+            }
+          },
+          "room": {
+            "type": "SUITE",
+            "type_estimated": {
+              "category": "SUITE",
+              "beds": 1,
+              "bedType": "KING"
+            },
+            "description": {
+              "text": "Luxury suite with private balcony"
+            }
+          },
+          "guests": {
+            "adults": 2
+          },
+          "policies": {
+            "cancellation": {
+              "description": "Free cancellation until 48 hours before check-in"
+            }
+          },
+          "self_check_in": null,
+          "booking_metadata": null
+        }
+      ],
+      "luxury_features": {
+        "star_rating": 5,
+        "amenities": [
+          "Free WiFi",
+          "Swimming Pool",
+          "Fitness Center",
+          "Room Service",
+          "Concierge",
+          "Business Center",
+          "Spa & Wellness",
+          "Valet Parking",
+          "Butler Service",
+          "Private Beach Access",
+          "Golf Course",
+          "Executive Lounge"
+        ],
+        "room_features": [
+          "Air Conditioning",
+          "Minibar",
+          "Safe",
+          "Television",
+          "Bathroom",
+          "Premium Bedding",
+          "Marble Bathroom",
+          "City/Ocean View",
+          "Premium Toiletries",
+          "Bathrobes & Slippers"
+        ],
+        "services": [
+          "24/7 Reception",
+          "Housekeeping",
+          "Laundry Service",
+          "Wake-up Service"
+        ],
+        "dining": [
+          "Restaurant",
+          "Bar",
+          "Room Service"
+        ]
+      },
+      "instant_booking": true,
+      "cancellation_policy": "Flexible",
+      "payment_options": [
+        "Credit Card",
+        "Happy Paisa Wallet"
+      ],
+      "rating_score": 4.5,
+      "reviews_count": 1250
+    }
+  ],
+  "total_results": 2,
+  "search_params": {
+    "cityCode": "GOA",
+    "checkInDate": "2025-07-27",
+    "checkOutDate": "2025-08-03",
+    "adults": 2,
+    "roomQuantity": 1,
+    "currency": "INR",
+    "bestRateOnly": true
+  },
+  "currency": "INR",
+  "luxury_metadata": {
+    "search_time": "2025-06-27T07:55:48.669988",
+    "booking_protection": "Free cancellation up to 24 hours",
+    "concierge_service": "Available for premium bookings",
+    "loyalty_benefits": "Earn Happy Paisa rewards",
+    "quality_guarantee": "Verified luxury properties only"
+  }
+}
