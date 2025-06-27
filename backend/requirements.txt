@@ -36,4 +36,4 @@ speechrecognition>=3.10.0
 # pyaudio>=0.2.11  # Commented out due to compilation issues
 pydub>=0.25.1
 requests>=2.31.0
-python-multipart>=0.0.9
+python-multipart>=0.0.9amadeus==12.0.0
