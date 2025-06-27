@@ -258,3 +258,323 @@ class AmadeusService:
                 'error': 'Processing error',
                 'raw_data': flight_offer
             }
+    
+    @async_amadeus_call
+    def _search_hotels_sync(self, **params):
+        """Real synchronous hotel search using Amadeus API"""
+        try:
+            logger.info(f"Calling real Amadeus hotel search with params: {params}")
+            response = self.client.shopping.hotel_offers_search.get(**params)
+            logger.info(f"Amadeus hotel API response received: {len(response.data) if response.data else 0} hotels")
+            return response.data
+        except Exception as e:
+            logger.error(f"Error in Amadeus hotel search: {str(e)}")
+            raise
+    
+    async def search_hotels(
+        self,
+        city_code: str,
+        check_in_date: str,
+        check_out_date: str,
+        adults: int = 1,
+        rooms: int = 1,
+        currency: str = "INR",
+        max_results: int = 50,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Search for luxury hotels with real Amadeus API
+        """
+        
+        params = {
+            'cityCode': city_code,
+            'checkInDate': check_in_date,
+            'checkOutDate': check_out_date,
+            'adults': adults,
+            'roomQuantity': rooms,
+            'currency': currency,
+            'bestRateOnly': True
+        }
+        
+        # Add additional filters
+        if 'hotelChain' in kwargs:
+            params['hotelChain'] = kwargs['hotelChain']
+        
+        if 'maxPrice' in kwargs:
+            params['priceRange'] = f"1-{kwargs['maxPrice']}"
+        
+        result = await self._search_hotels_sync(**params)
+        
+        if isinstance(result, dict) and result.get('error'):
+            return result
+        
+        # Process hotels for luxury display
+        processed_hotels = []
+        for hotel_offer in result:
+            processed_hotel = self._process_hotel_offer(hotel_offer)
+            processed_hotels.append(processed_hotel)
+        
+        return {
+            "success": True,
+            "hotels": processed_hotels,
+            "total_results": len(processed_hotels),
+            "search_params": params,
+            "currency": currency
+        }
+    
+    def _process_hotel_offer(self, hotel_offer: Dict) -> Dict[str, Any]:
+        """Process hotel offer for luxury display"""
+        try:
+            hotel = hotel_offer.get('hotel', {})
+            offers = hotel_offer.get('offers', [])
+            
+            # Get best offer
+            best_offer = offers[0] if offers else {}
+            price = best_offer.get('price', {})
+            room = best_offer.get('room', {})
+            
+            # Enhanced hotel information
+            luxury_features = {
+                'star_rating': 4,  # Default, should be enriched from hotel data
+                'amenities': [
+                    'Free WiFi',
+                    'Swimming Pool',
+                    'Fitness Center',
+                    'Room Service',
+                    'Concierge',
+                    'Business Center'
+                ],
+                'room_features': [
+                    'Air Conditioning',
+                    'Minibar',
+                    'Safe',
+                    'Television',
+                    'Bathroom'
+                ],
+                'services': [
+                    '24/7 Reception',
+                    'Housekeeping',
+                    'Laundry Service',
+                    'Wake-up Service'
+                ],
+                'dining': [
+                    'Restaurant',
+                    'Bar',
+                    'Room Service'
+                ]
+            }
+            
+            # Determine luxury level based on available data
+            hotel_name = hotel.get('name', '').upper()
+            if any(luxury_brand in hotel_name for luxury_brand in ['MARRIOTT', 'HILTON', 'HYATT', 'SHERATON', 'WESTIN', 'RITZ', 'LUXURY']):
+                luxury_features.update({
+                    'star_rating': 5,
+                    'amenities': luxury_features['amenities'] + [
+                        'Spa & Wellness',
+                        'Valet Parking',
+                        'Butler Service',
+                        'Private Beach Access',
+                        'Golf Course',
+                        'Executive Lounge'
+                    ],
+                    'room_features': luxury_features['room_features'] + [
+                        'Premium Bedding',
+                        'Marble Bathroom',
+                        'City/Ocean View',
+                        'Premium Toiletries',
+                        'Bathrobes & Slippers'
+                    ]
+                })
+            
+            return {
+                'id': hotel_offer.get('id'),
+                'hotel': {
+                    'name': hotel.get('name'),
+                    'hotel_id': hotel.get('hotelId'),
+                    'chain_code': hotel.get('chainCode'),
+                    'iata_code': hotel.get('iataCode'),
+                    'address': hotel.get('address', {}),
+                    'contact': hotel.get('contact', {}),
+                    'description': hotel.get('description', {})
+                },
+                'offers': [{
+                    'id': best_offer.get('id'),
+                    'price': {
+                        'total': float(price.get('total', 0)),
+                        'base': float(price.get('base', 0)),
+                        'currency': price.get('currency', 'INR'),
+                        'taxes': price.get('taxes', []),
+                        'variations': price.get('variations', [])
+                    },
+                    'room': {
+                        'type': room.get('type'),
+                        'type_estimated': room.get('typeEstimated', {}),
+                        'description': room.get('description', {})
+                    },
+                    'guests': best_offer.get('guests', {}),
+                    'policies': best_offer.get('policies', {}),
+                    'self_check_in': best_offer.get('selfCheckInInstructions'),
+                    'booking_metadata': best_offer.get('bookingMetadata')
+                }],
+                'luxury_features': luxury_features,
+                'instant_booking': True,
+                'cancellation_policy': 'Flexible',
+                'payment_options': ['Credit Card', 'Happy Paisa Wallet'],
+                'rating_score': 4.2 + (luxury_features['star_rating'] - 4) * 0.3,  # Estimated rating
+                'reviews_count': 1250  # Mock data
+            }
+            
+        except Exception as e:
+            logger.error(f"Error processing hotel offer: {str(e)}")
+            return {
+                'id': hotel_offer.get('id', 'unknown'),
+                'error': 'Processing error',
+                'raw_data': hotel_offer
+            }
+    
+    @async_amadeus_call
+    def _search_destinations_sync(self, **params):
+        """Real synchronous destination search using Amadeus API"""
+        try:
+            logger.info(f"Calling real Amadeus destination search with params: {params}")
+            response = self.client.reference_data.locations.cities.get(**params)
+            logger.info(f"Amadeus destination API response received: {len(response.data) if response.data else 0} destinations")
+            return response.data
+        except Exception as e:
+            logger.error(f"Error in Amadeus destination search: {str(e)}")
+            raise
+    
+    async def search_destinations(
+        self,
+        keyword: str,
+        max_results: int = 20,
+        country_code: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Search for destinations with real Amadeus API
+        """
+        
+        params = {
+            'keyword': keyword,
+            'max': max_results,
+            'include': 'AIRPORTS'
+        }
+        
+        if country_code:
+            params['countryCode'] = country_code
+        
+        result = await self._search_destinations_sync(**params)
+        
+        if isinstance(result, dict) and result.get('error'):
+            return result
+        
+        # Process destinations for luxury display
+        processed_destinations = []
+        for destination in result:
+            processed_destination = self._process_destination(destination)
+            processed_destinations.append(processed_destination)
+        
+        return {
+            "success": True,
+            "destinations": processed_destinations,
+            "total_results": len(processed_destinations),
+            "search_keyword": keyword
+        }
+    
+    def _process_destination(self, destination: Dict) -> Dict[str, Any]:
+        """Process destination for luxury travel insights"""
+        try:
+            # Enhanced destination information
+            city_name = destination.get('name', '')
+            country_code = destination.get('address', {}).get('countryCode', '')
+            
+            # Mock luxury travel insights (in a real app, this would come from additional APIs)
+            luxury_insights = {
+                'best_season': 'October - March',
+                'weather': 'Pleasant and sunny',
+                'luxury_hotels_count': 25,
+                'michelin_restaurants': 8,
+                'cultural_attractions': [
+                    'Historical monuments',
+                    'Art galleries',
+                    'Cultural centers',
+                    'Local markets'
+                ],
+                'activities': [
+                    'City tours',
+                    'Shopping',
+                    'Fine dining',
+                    'Cultural experiences'
+                ],
+                'luxury_experiences': [
+                    'Private guided tours',
+                    'Helicopter rides',
+                    'Yacht charters',
+                    'Spa retreats'
+                ],
+                'travel_tips': [
+                    'Book accommodations in advance',
+                    'Try local cuisine',
+                    'Respect local customs',
+                    'Stay hydrated'
+                ]
+            }
+            
+            return {
+                'id': destination.get('id'),
+                'name': city_name,
+                'iata_code': destination.get('iataCode'),
+                'type': destination.get('subType'),
+                'address': destination.get('address', {}),
+                'geo_code': destination.get('geoCode', {}),
+                'timezone': destination.get('timeZoneOffset'),
+                'luxury_insights': luxury_insights,
+                'popularity_score': 8.5,  # Mock data
+                'safety_rating': 'Very Safe',
+                'currency': self._get_currency_for_country(country_code),
+                'language': self._get_language_for_country(country_code)
+            }
+            
+        except Exception as e:
+            logger.error(f"Error processing destination: {str(e)}")
+            return {
+                'id': destination.get('id', 'unknown'),
+                'error': 'Processing error',
+                'raw_data': destination
+            }
+    
+    def _get_currency_for_country(self, country_code: str) -> str:
+        """Get currency for country code"""
+        currency_map = {
+            'IN': 'INR',
+            'US': 'USD',
+            'GB': 'GBP',
+            'EU': 'EUR',
+            'JP': 'JPY',
+            'AU': 'AUD',
+            'CA': 'CAD',
+            'SG': 'SGD',
+            'AE': 'AED',
+            'TH': 'THB'
+        }
+        return currency_map.get(country_code, 'USD')
+    
+    def _get_language_for_country(self, country_code: str) -> str:
+        """Get primary language for country code"""
+        language_map = {
+            'IN': 'Hindi/English',
+            'US': 'English',
+            'GB': 'English',
+            'FR': 'French',
+            'DE': 'German',
+            'JP': 'Japanese',
+            'CN': 'Chinese',
+            'ES': 'Spanish',
+            'IT': 'Italian',
+            'TH': 'Thai',
+            'AE': 'Arabic/English'
+        }
+        return language_map.get(country_code, 'English')
+
+# Global service instance
+amadeus_service = AmadeusService()
