@@ -1404,6 +1404,11 @@ def test_amadeus_api_specific():
     """Test specific Amadeus API endpoints with exact payloads"""
     print("\n=== Testing Amadeus API with Specific Payloads ===\n")
     
+    # Get future dates (1 month from now)
+    from datetime import datetime, timedelta
+    future_date = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
+    future_date_end = (datetime.now() + timedelta(days=37)).strftime("%Y-%m-%d")
+    
     # 1. Test Amadeus health check endpoint
     print("1. Testing Amadeus health check endpoint...")
     try:
@@ -1426,11 +1431,13 @@ def test_amadeus_api_specific():
     flight_search_payload = {
         "origin": "DEL",
         "destination": "GOA", 
-        "departure_date": "2025-02-15",
+        "departure_date": future_date,  # Use future date
         "adults": 1,
         "travel_class": "ECONOMY",
         "max_results": 10
     }
+    
+    print(f"Using departure date: {future_date}")
     
     try:
         response = requests.post(f"{BACKEND_URL}/amadeus/flights/search", json=flight_search_payload)
@@ -1489,12 +1496,15 @@ def test_amadeus_api_specific():
     print("3. Testing Amadeus hotel search with specific payload...")
     hotel_search_payload = {
         "city_code": "GOA",
-        "check_in_date": "2025-02-15", 
-        "check_out_date": "2025-02-22",
+        "check_in_date": future_date,  # Use future date
+        "check_out_date": future_date_end,  # Use future date + 7 days
         "adults": 2,
         "rooms": 1,
         "max_results": 10
     }
+    
+    print(f"Using check-in date: {future_date}")
+    print(f"Using check-out date: {future_date_end}")
     
     try:
         response = requests.post(f"{BACKEND_URL}/amadeus/hotels/search", json=hotel_search_payload)
