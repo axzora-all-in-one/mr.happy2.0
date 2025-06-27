@@ -61,7 +61,8 @@ async def health_check():
                 "travel": "operational", 
                 "recharge": "operational",
                 "ecommerce": "operational",
-                "voice_ai": "operational"
+                "voice_ai": "operational",
+                "amadeus": "operational"
             },
             "message": "All systems operational with advanced AI voice capabilities"
         }
