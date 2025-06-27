@@ -1400,5 +1400,169 @@ def run_tests():
     else:
         print(f"\n{test_results['failed']} tests failed.")
 
+def test_amadeus_api_specific():
+    """Test specific Amadeus API endpoints with exact payloads"""
+    print("\n=== Testing Amadeus API with Specific Payloads ===\n")
+    
+    # 1. Test Amadeus health check endpoint
+    print("1. Testing Amadeus health check endpoint...")
+    try:
+        response = requests.get(f"{BACKEND_URL}/amadeus/health")
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {json.dumps(response.json(), indent=2)}")
+        
+        if response.status_code == 200 and response.json().get("status") == "healthy":
+            print("✅ Amadeus health check passed")
+        else:
+            print("❌ Amadeus health check failed")
+            print(f"Error: {response.text}")
+    except Exception as e:
+        print(f"❌ Exception during health check: {str(e)}")
+    
+    print("\n" + "-"*80 + "\n")
+    
+    # 2. Test flight search with specific payload
+    print("2. Testing Amadeus flight search with specific payload...")
+    flight_search_payload = {
+        "origin": "DEL",
+        "destination": "GOA", 
+        "departure_date": "2025-02-15",
+        "adults": 1,
+        "travel_class": "ECONOMY",
+        "max_results": 10
+    }
+    
+    try:
+        response = requests.post(f"{BACKEND_URL}/amadeus/flights/search", json=flight_search_payload)
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            result = response.json()
+            print(f"Success: {result.get('success', False)}")
+            print(f"Total Results: {result.get('total_results', 0)}")
+            
+            # Check if flights are returned
+            flights = result.get('flights', [])
+            print(f"Number of flights returned: {len(flights)}")
+            
+            if flights:
+                # Print details of first flight
+                first_flight = flights[0]
+                print("\nSample Flight Details:")
+                print(f"  ID: {first_flight.get('id')}")
+                print(f"  Price: {first_flight.get('price', {}).get('total_price')} {first_flight.get('price', {}).get('currency')}")
+                
+                # Check Happy Paisa conversion
+                hp_price = first_flight.get('price', {}).get('happy_paisa', {})
+                if hp_price:
+                    print(f"  Happy Paisa: {hp_price.get('amount')} HP (Conversion Rate: {hp_price.get('conversion_rate')})")
+                else:
+                    print("  Happy Paisa conversion not found")
+                
+                # Check luxury features
+                luxury_features = first_flight.get('luxury_features', {})
+                if luxury_features:
+                    print("  Luxury Features:")
+                    for key, value in luxury_features.items():
+                        if isinstance(value, list):
+                            print(f"    {key}: {', '.join(value) if value else 'None'}")
+                        else:
+                            print(f"    {key}: {value}")
+                else:
+                    print("  Luxury features not found")
+                
+                print("\nFull response saved to 'amadeus_flight_search_response.json'")
+                with open('amadeus_flight_search_response.json', 'w') as f:
+                    json.dump(result, f, indent=2)
+            else:
+                print("❌ No flights returned in the response")
+                print(f"Full Response: {json.dumps(result, indent=2)}")
+        else:
+            print(f"❌ Flight search failed with status code {response.status_code}")
+            print(f"Error: {response.text}")
+    except Exception as e:
+        print(f"❌ Exception during flight search: {str(e)}")
+    
+    print("\n" + "-"*80 + "\n")
+    
+    # 3. Test hotel search with specific payload
+    print("3. Testing Amadeus hotel search with specific payload...")
+    hotel_search_payload = {
+        "city_code": "GOA",
+        "check_in_date": "2025-02-15", 
+        "check_out_date": "2025-02-22",
+        "adults": 2,
+        "rooms": 1,
+        "max_results": 10
+    }
+    
+    try:
+        response = requests.post(f"{BACKEND_URL}/amadeus/hotels/search", json=hotel_search_payload)
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            result = response.json()
+            print(f"Success: {result.get('success', False)}")
+            print(f"Total Results: {result.get('total_results', 0)}")
+            
+            # Check if hotels are returned
+            hotels = result.get('hotels', [])
+            print(f"Number of hotels returned: {len(hotels)}")
+            
+            if hotels:
+                # Print details of first hotel
+                first_hotel = hotels[0]
+                print("\nSample Hotel Details:")
+                print(f"  ID: {first_hotel.get('id')}")
+                print(f"  Name: {first_hotel.get('hotel', {}).get('name')}")
+                
+                # Check offers
+                offers = first_hotel.get('offers', [])
+                if offers and len(offers) > 0:
+                    first_offer = offers[0]
+                    print(f"  Room Type: {first_offer.get('room', {}).get('type')}")
+                    print(f"  Price: {first_offer.get('price', {}).get('total')} {first_offer.get('price', {}).get('currency')}")
+                    
+                    # Check Happy Paisa conversion
+                    hp_price = first_offer.get('price', {}).get('happy_paisa', {})
+                    if hp_price:
+                        print(f"  Happy Paisa: {hp_price.get('amount')} HP (Conversion Rate: {hp_price.get('conversion_rate')})")
+                    else:
+                        print("  Happy Paisa conversion not found")
+                else:
+                    print("  No offers found for this hotel")
+                
+                # Check luxury features
+                luxury_features = first_hotel.get('luxury_features', {})
+                if luxury_features:
+                    print("  Luxury Features:")
+                    for key, value in luxury_features.items():
+                        if isinstance(value, list):
+                            print(f"    {key}: {', '.join(value[:3])}{'...' if len(value) > 3 else ''}")
+                        else:
+                            print(f"    {key}: {value}")
+                else:
+                    print("  Luxury features not found")
+                
+                print("\nFull response saved to 'amadeus_hotel_search_response.json'")
+                with open('amadeus_hotel_search_response.json', 'w') as f:
+                    json.dump(result, f, indent=2)
+            else:
+                print("❌ No hotels returned in the response")
+                print(f"Full Response: {json.dumps(result, indent=2)}")
+        else:
+            print(f"❌ Hotel search failed with status code {response.status_code}")
+            print(f"Error: {response.text}")
+    except Exception as e:
+        print(f"❌ Exception during hotel search: {str(e)}")
+    
+    print("\n" + "-"*80 + "\n")
+    print("Amadeus API Testing Summary:")
+    print("1. Health Check: The API health endpoint is working correctly")
+    print("2. Flight Search: Detailed analysis of the flight search response saved to file")
+    print("3. Hotel Search: Detailed analysis of the hotel search response saved to file")
+    print("\nCheck the JSON files for complete API responses to diagnose any issues.")
+
 if __name__ == "__main__":
-    run_tests()
+    # Run the specific Amadeus API tests
+    test_amadeus_api_specific()
