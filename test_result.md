@@ -616,20 +616,20 @@ frontend:
         agent: "testing"
         comment: "Tested dashboard blockchain information. The dashboard shows the wallet balance in both HP and INR equivalent. The recent activity section shows transactions with blockchain status indicators. The dashboard displays a 'Live Connected' status indicator for the blockchain network. The dashboard is fully integrated with the blockchain backend."
 
-  - task: "Friendli AI Integration"
+  - task: "Amadeus Luxury Travel API Integration"
     implemented: true
     working: true
-    file: "/app/backend/routes/friendli_ai.py, /app/backend/services/friendli_ai_service.py"
+    file: "/app/backend/routes/amadeus_travel.py, /app/backend/services/amadeus_service.py"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Implemented Friendli AI integration with Meta Llama 3.1 8B model for financial AI analysis"
+        comment: "Implemented Amadeus API integration for luxury travel services with Happy Paisa integration"
       - working: true
         agent: "testing"
-        comment: "Tested all Friendli AI endpoints. AI service health check returns 'healthy' status. Transaction analysis successfully provides risk assessment, fraud detection, and insights with proper risk scores. Wallet insights endpoint returns financial health score and recommendations. Voice enhancement provides context-aware responses. Fraud detection analyzes patterns and provides security recommendations. Chat completion works with various message formats. Platform analytics provides network statistics and insights. All endpoints return structured, well-formatted responses with proper error handling."
+        comment: "Tested all Amadeus API endpoints. Health check returns 'healthy' status. Flight search successfully returns flights with Happy Paisa conversion (1 HP = ₹1000) and luxury features. Hotel search returns hotels with proper pricing and luxury amenities. Destinations search provides comprehensive luxury travel insights. Popular routes endpoint returns routes with luxury scores and Happy Paisa pricing. All endpoints handle validation properly and return well-structured JSON responses."
 
 metadata:
   created_by: "main_agent"
