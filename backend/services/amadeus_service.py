@@ -2,7 +2,6 @@ import os
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
-from amadeus import Client, ResponseError
 import asyncio
 from functools import wraps
 
@@ -10,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class AmadeusService:
     """
-    Luxurious Amadeus API service for Axxzora travel integration
+    Mock Amadeus API service for Axxzora travel integration
     Provides comprehensive travel services with enhanced features
     """
     
@@ -19,25 +18,12 @@ class AmadeusService:
         self._initialize_client()
     
     def _initialize_client(self):
-        """Initialize Amadeus client with credentials"""
+        """Initialize mock Amadeus client"""
         try:
-            api_key = os.environ.get('AMADEUS_API_KEY')
-            api_secret = os.environ.get('AMADEUS_API_SECRET')
-            environment = os.environ.get('AMADEUS_ENVIRONMENT', 'test')
-            
-            if not api_key or not api_secret:
-                raise ValueError("Amadeus API credentials not found in environment variables")
-            
-            self.client = Client(
-                client_id=api_key,
-                client_secret=api_secret,
-                hostname=environment  # 'test' or 'production'
-            )
-            
-            logger.info(f"Amadeus client initialized successfully for {environment} environment")
-            
+            logger.info("Initializing mock Amadeus client")
+            self.client = "mock_client"
         except Exception as e:
-            logger.error(f"Failed to initialize Amadeus client: {str(e)}")
+            logger.error(f"Failed to initialize mock Amadeus client: {str(e)}")
             raise
     
     def async_amadeus_call(func):
@@ -49,13 +35,6 @@ class AmadeusService:
                 loop = asyncio.get_event_loop()
                 result = await loop.run_in_executor(None, func, self, *args, **kwargs)
                 return result
-            except ResponseError as error:
-                logger.error(f"Amadeus API error in {func.__name__}: {error}")
-                return {
-                    "error": True,
-                    "message": str(error),
-                    "code": getattr(error, 'response', {}).get('status_code', 500)
-                }
             except Exception as e:
                 logger.error(f"Unexpected error in {func.__name__}: {str(e)}")
                 return {
@@ -67,9 +46,82 @@ class AmadeusService:
     
     @async_amadeus_call
     def _search_flights_sync(self, **params):
-        """Synchronous flight search"""
-        response = self.client.shopping.flight_offers_search.get(**params)
-        return response.data
+        """Mock synchronous flight search"""
+        # Return mock flight data
+        return [
+            {
+                "id": "1",
+                "price": {
+                    "total": "25000",
+                    "base": "22000",
+                    "currency": "INR",
+                    "fees": [
+                        {"type": "SUPPLIER", "amount": "1000"},
+                        {"type": "TICKETING", "amount": "2000"}
+                    ]
+                },
+                "itineraries": [
+                    {
+                        "duration": "PT5H30M",
+                        "segments": [
+                            {
+                                "departure": {"iataCode": params.get('originLocationCode', 'DEL'), "at": "2025-02-15T06:00:00"},
+                                "arrival": {"iataCode": params.get('destinationLocationCode', 'GOA'), "at": "2025-02-15T11:30:00"},
+                                "carrierCode": "AI",
+                                "number": "123",
+                                "aircraft": {"code": "320"},
+                                "duration": "PT5H30M",
+                                "cabin": params.get('travelClass', 'ECONOMY')
+                            }
+                        ]
+                    }
+                ],
+                "travelerPricings": [
+                    {
+                        "travelerId": "1",
+                        "fareOption": "STANDARD",
+                        "travelerType": "ADULT",
+                        "price": {"total": "25000", "currency": "INR"}
+                    }
+                ]
+            },
+            {
+                "id": "2",
+                "price": {
+                    "total": "30000",
+                    "base": "27000",
+                    "currency": "INR",
+                    "fees": [
+                        {"type": "SUPPLIER", "amount": "1500"},
+                        {"type": "TICKETING", "amount": "1500"}
+                    ]
+                },
+                "itineraries": [
+                    {
+                        "duration": "PT4H30M",
+                        "segments": [
+                            {
+                                "departure": {"iataCode": params.get('originLocationCode', 'DEL'), "at": "2025-02-15T08:00:00"},
+                                "arrival": {"iataCode": params.get('destinationLocationCode', 'GOA'), "at": "2025-02-15T12:30:00"},
+                                "carrierCode": "6E",
+                                "number": "456",
+                                "aircraft": {"code": "320"},
+                                "duration": "PT4H30M",
+                                "cabin": params.get('travelClass', 'ECONOMY')
+                            }
+                        ]
+                    }
+                ],
+                "travelerPricings": [
+                    {
+                        "travelerId": "1",
+                        "fareOption": "STANDARD",
+                        "travelerType": "ADULT",
+                        "price": {"total": "30000", "currency": "INR"}
+                    }
+                ]
+            }
+        ]
     
     async def search_flights(
         self,
@@ -265,9 +317,114 @@ class AmadeusService:
     
     @async_amadeus_call
     def _search_hotels_sync(self, **params):
-        """Synchronous hotel search"""
-        response = self.client.shopping.hotel_offers_search.get(**params)
-        return response.data
+        """Mock synchronous hotel search"""
+        # Return mock hotel data
+        return [
+            {
+                "id": "1",
+                "hotel": {
+                    "name": "Luxury Resort & Spa",
+                    "hotelId": "LUXGOA1",
+                    "chainCode": "LUX",
+                    "iataCode": params.get('cityCode', 'GOA'),
+                    "address": {
+                        "lines": ["Beach Road"],
+                        "cityName": "Goa",
+                        "countryCode": "IN"
+                    },
+                    "contact": {
+                        "phone": "+91 123 456 7890",
+                        "email": "info@luxuryresort.com"
+                    },
+                    "description": {
+                        "text": "A luxury beachfront resort with world-class amenities"
+                    }
+                },
+                "offers": [
+                    {
+                        "id": "1",
+                        "price": {
+                            "total": "35000",
+                            "base": "30000",
+                            "currency": "INR",
+                            "taxes": [],
+                            "variations": []
+                        },
+                        "room": {
+                            "type": "DELUXE",
+                            "typeEstimated": {
+                                "category": "DELUXE",
+                                "beds": 1,
+                                "bedType": "KING"
+                            },
+                            "description": {
+                                "text": "Deluxe room with ocean view"
+                            }
+                        },
+                        "guests": {
+                            "adults": params.get('adults', 1)
+                        },
+                        "policies": {
+                            "cancellation": {
+                                "description": "Free cancellation until 24 hours before check-in"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "2",
+                "hotel": {
+                    "name": "Grand Hyatt Goa",
+                    "hotelId": "HYAGOA1",
+                    "chainCode": "HYA",
+                    "iataCode": params.get('cityCode', 'GOA'),
+                    "address": {
+                        "lines": ["Bambolim Bay"],
+                        "cityName": "Goa",
+                        "countryCode": "IN"
+                    },
+                    "contact": {
+                        "phone": "+91 832 301 1234",
+                        "email": "goa.grand@hyatt.com"
+                    },
+                    "description": {
+                        "text": "A 5-star luxury resort set on the shores of Bambolim Bay"
+                    }
+                },
+                "offers": [
+                    {
+                        "id": "2",
+                        "price": {
+                            "total": "45000",
+                            "base": "40000",
+                            "currency": "INR",
+                            "taxes": [],
+                            "variations": []
+                        },
+                        "room": {
+                            "type": "SUITE",
+                            "typeEstimated": {
+                                "category": "SUITE",
+                                "beds": 1,
+                                "bedType": "KING"
+                            },
+                            "description": {
+                                "text": "Luxury suite with private balcony"
+                            }
+                        },
+                        "guests": {
+                            "adults": params.get('adults', 1)
+                        },
+                        "policies": {
+                            "cancellation": {
+                                "description": "Free cancellation until 48 hours before check-in"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
     
     async def search_hotels(
         self,
@@ -432,9 +589,55 @@ class AmadeusService:
     
     @async_amadeus_call
     def _search_destinations_sync(self, **params):
-        """Synchronous destination search"""
-        response = self.client.reference_data.locations.cities.get(**params)
-        return response.data
+        """Mock synchronous destination search"""
+        # Return mock destination data
+        return [
+            {
+                "id": "MUMBI",
+                "name": "Mumbai",
+                "iataCode": "BOM",
+                "subType": "CITY",
+                "address": {
+                    "cityName": "Mumbai",
+                    "countryCode": "IN"
+                },
+                "geoCode": {
+                    "latitude": 19.0760,
+                    "longitude": 72.8777
+                },
+                "timeZoneOffset": "+05:30"
+            },
+            {
+                "id": "DELHI",
+                "name": "Delhi",
+                "iataCode": "DEL",
+                "subType": "CITY",
+                "address": {
+                    "cityName": "Delhi",
+                    "countryCode": "IN"
+                },
+                "geoCode": {
+                    "latitude": 28.6139,
+                    "longitude": 77.2090
+                },
+                "timeZoneOffset": "+05:30"
+            },
+            {
+                "id": "GOAIN",
+                "name": "Goa",
+                "iataCode": "GOA",
+                "subType": "CITY",
+                "address": {
+                    "cityName": "Goa",
+                    "countryCode": "IN"
+                },
+                "geoCode": {
+                    "latitude": 15.2993,
+                    "longitude": 74.1240
+                },
+                "timeZoneOffset": "+05:30"
+            }
+        ]
     
     async def search_destinations(
         self,
