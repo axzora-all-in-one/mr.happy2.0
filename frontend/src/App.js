@@ -9,7 +9,7 @@ import ResponsiveLayout from "./components/layout/ResponsiveLayout";
 
 // Pages
 import EnhancedDashboard from "./pages/EnhancedDashboard";
-import Travel from "./pages/Travel";
+import LuxuryTravel from "./pages/LuxuryTravel";
 import Recharge from "./pages/Recharge";
 import ShopUpdated from "./pages/ShopUpdated";
 import WalletUpdated from "./pages/WalletUpdated";
@@ -31,7 +31,7 @@ const App = () => {
                 <Routes>
                   {/* Main Pages */}
                   <Route path="/" element={<EnhancedDashboard />} />
-                  <Route path="/travel" element={<Travel />} />
+                  <Route path="/travel" element={<LuxuryTravel />} />
                   <Route path="/recharge" element={<Recharge />} />
                   <Route path="/shop" element={<ShopUpdated />} />
                   <Route path="/wallet" element={<WalletUpdated />} />
