@@ -86,6 +86,7 @@ app.include_router(virtual_cards.router)  # Virtual debit cards
 app.include_router(card_management.router)  # Card management and analytics
 app.include_router(blockchain.router)  # Happy Paisa blockchain operations
 app.include_router(friendli_ai.router)  # Friendli AI enhanced capabilities
+app.include_router(amadeus_travel.router)  # Amadeus luxury travel services
 
 # Include the main API router
 app.include_router(api_router)
