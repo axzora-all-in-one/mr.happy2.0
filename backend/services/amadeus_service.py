@@ -31,9 +31,8 @@ class AmadeusService:
         @wraps(func)
         async def wrapper(self, *args, **kwargs):
             try:
-                # Run the blocking Amadeus call in a thread pool
-                loop = asyncio.get_event_loop()
-                result = await loop.run_in_executor(None, func, self, *args, **kwargs)
+                # For our mock implementation, we'll just call the function directly
+                result = func(self, *args, **kwargs)
                 return result
             except Exception as e:
                 logger.error(f"Unexpected error in {func.__name__}: {str(e)}")
