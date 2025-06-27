@@ -78,3 +78,183 @@ class AmadeusService:
         except Exception as e:
             logger.error(f"Error in Amadeus flight search: {str(e)}")
             raise
+
+    async def search_flights(
+        self,
+        origin: str,
+        destination: str,
+        departure_date: str,
+        return_date: Optional[str] = None,
+        adults: int = 1,
+        children: int = 0,
+        infants: int = 0,
+        travel_class: str = "ECONOMY",
+        max_results: int = 50,
+        currency: str = "INR",
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Search for flights with real Amadeus API
+        """
+        
+        params = {
+            'originLocationCode': origin,
+            'destinationLocationCode': destination,
+            'departureDate': departure_date,
+            'adults': adults,
+            'max': max_results,
+            'currencyCode': currency,
+            'travelClass': travel_class
+        }
+        
+        if return_date:
+            params['returnDate'] = return_date
+        
+        if children > 0:
+            params['children'] = children
+        
+        if infants > 0:
+            params['infants'] = infants
+        
+        # Add additional filters from kwargs
+        if 'nonStop' in kwargs:
+            params['nonStop'] = kwargs['nonStop']
+        
+        if 'maxPrice' in kwargs:
+            params['maxPrice'] = kwargs['maxPrice']
+        
+        result = await self._search_flights_sync(**params)
+        
+        if isinstance(result, dict) and result.get('error'):
+            return result
+        
+        # Enhanced processing for luxury display
+        processed_flights = []
+        for flight_offer in result:
+            processed_flight = self._process_flight_offer(flight_offer)
+            processed_flights.append(processed_flight)
+        
+        return {
+            "success": True,
+            "flights": processed_flights,
+            "total_results": len(processed_flights),
+            "search_params": params,
+            "currency": currency
+        }
+    
+    def _process_flight_offer(self, flight_offer: Dict) -> Dict[str, Any]:
+        """Process and enhance flight offer data for luxury display"""
+        try:
+            price = flight_offer.get('price', {})
+            itineraries = flight_offer.get('itineraries', [])
+            traveler_pricings = flight_offer.get('travelerPricings', [])
+            
+            # Calculate total duration and stops
+            total_duration = ""
+            total_stops = 0
+            segments_info = []
+            
+            for itinerary in itineraries:
+                duration = itinerary.get('duration', '')
+                segments = itinerary.get('segments', [])
+                total_stops += len(segments) - 1
+                
+                for segment in segments:
+                    segment_info = {
+                        'departure': {
+                            'airport': segment.get('departure', {}).get('iataCode'),
+                            'terminal': segment.get('departure', {}).get('terminal'),
+                            'time': segment.get('departure', {}).get('at')
+                        },
+                        'arrival': {
+                            'airport': segment.get('arrival', {}).get('iataCode'),
+                            'terminal': segment.get('arrival', {}).get('terminal'),
+                            'time': segment.get('arrival', {}).get('at')
+                        },
+                        'carrier': segment.get('carrierCode'),
+                        'flight_number': segment.get('number'),
+                        'aircraft': segment.get('aircraft', {}).get('code'),
+                        'duration': segment.get('duration'),
+                        'cabin_class': segment.get('cabin', 'ECONOMY')
+                    }
+                    segments_info.append(segment_info)
+                
+                if duration:
+                    total_duration = duration
+            
+            # Enhanced pricing information
+            pricing_details = {
+                'total_price': float(price.get('total', 0)),
+                'base_price': float(price.get('base', 0)),
+                'currency': price.get('currency', 'INR'),
+                'taxes': [],
+                'fees': []
+            }
+            
+            # Process fees and taxes
+            for fee in price.get('fees', []):
+                pricing_details['fees'].append({
+                    'type': fee.get('type'),
+                    'amount': float(fee.get('amount', 0))
+                })
+            
+            # Luxury features and amenities
+            luxury_features = {
+                'cabin_amenities': [],
+                'meal_service': 'Standard',
+                'entertainment': 'Available',
+                'wifi': 'Available',
+                'seat_pitch': 'Standard',
+                'baggage_allowance': '23kg'
+            }
+            
+            # Determine luxury level based on cabin class
+            cabin_classes = [seg.get('cabin_class', 'ECONOMY') for seg in segments_info]
+            if 'FIRST' in cabin_classes:
+                luxury_features.update({
+                    'meal_service': 'Gourmet Multi-Course',
+                    'entertainment': 'Premium Entertainment System',
+                    'wifi': 'Complimentary High-Speed WiFi',
+                    'seat_pitch': '60+ inches',
+                    'baggage_allowance': '32kg x 2',
+                    'cabin_amenities': ['Lie-flat beds', 'Premium lounge access', 'Dedicated check-in']
+                })
+            elif 'BUSINESS' in cabin_classes:
+                luxury_features.update({
+                    'meal_service': 'Premium Multi-Course',
+                    'entertainment': 'Premium Entertainment',
+                    'wifi': 'Complimentary WiFi',
+                    'seat_pitch': '40+ inches',
+                    'baggage_allowance': '32kg x 2',
+                    'cabin_amenities': ['Flat-bed seats', 'Lounge access', 'Priority boarding']
+                })
+            elif 'PREMIUM_ECONOMY' in cabin_classes:
+                luxury_features.update({
+                    'meal_service': 'Enhanced Meal Service',
+                    'seat_pitch': '34+ inches',
+                    'baggage_allowance': '23kg x 2',
+                    'cabin_amenities': ['Extra legroom', 'Priority boarding']
+                })
+            
+            return {
+                'id': flight_offer.get('id'),
+                'price': pricing_details,
+                'itineraries': segments_info,
+                'duration': total_duration,
+                'stops': total_stops,
+                'luxury_features': luxury_features,
+                'booking_class': cabin_classes[0] if cabin_classes else 'ECONOMY',
+                'instant_pricing': True,
+                'change_fees': 'Included in fare rules',
+                'validity': '24 hours',
+                'last_ticketing_date': flight_offer.get('lastTicketingDate'),
+                'traveler_pricings': traveler_pricings
+            }
+            
+        except Exception as e:
+            logger.error(f"Error processing flight offer: {str(e)}")
+            return {
+                'id': flight_offer.get('id', 'unknown'),
+                'error': 'Processing error',
+                'raw_data': flight_offer
+            }
