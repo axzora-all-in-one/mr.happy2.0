@@ -1181,5 +1181,229 @@ def run_tests():
     else:
         print(f"\n{test_results['failed']} tests failed.")
 
+# Amadeus API Tests
+def test_amadeus_health():
+    """Test Amadeus API health check endpoint"""
+    try:
+        response = requests.get(f"{BACKEND_URL}/amadeus/health")
+        if response.status_code == 200 and response.json().get("status") == "healthy":
+            log_test("Amadeus Health Check", True)
+            return True
+        else:
+            log_test("Amadeus Health Check", False, response)
+            return False
+    except Exception as e:
+        log_test("Amadeus Health Check", False, error=str(e))
+        return False
+
+def test_amadeus_flight_search():
+    """Test Amadeus flight search endpoint"""
+    try:
+        # Sample flight search from Delhi to Goa
+        flight_search_data = {
+            "origin": "DEL",
+            "destination": "GOA",
+            "departure_date": (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d"),
+            "adults": 1,
+            "travel_class": "ECONOMY",
+            "max_results": 10,
+            "currency": "INR"
+        }
+        
+        response = requests.post(f"{BACKEND_URL}/amadeus/flights/search", json=flight_search_data)
+        
+        if response.status_code == 200 and "flights" in response.json():
+            flights = response.json().get("flights", [])
+            log_test("Amadeus Flight Search", True)
+            
+            # Verify Happy Paisa conversion
+            if flights and "price" in flights[0] and "happy_paisa" in flights[0]["price"]:
+                hp_price = flights[0]["price"]["happy_paisa"]
+                if "amount" in hp_price and "conversion_rate" in hp_price and hp_price["conversion_rate"] == 1000:
+                    log_test("Amadeus Flight Search - Happy Paisa Conversion", True)
+                else:
+                    log_test("Amadeus Flight Search - Happy Paisa Conversion", False, response)
+            else:
+                log_test("Amadeus Flight Search - Happy Paisa Conversion", False, response)
+            
+            # Verify luxury features
+            if flights and "luxury_features" in flights[0]:
+                log_test("Amadeus Flight Search - Luxury Features", True)
+            else:
+                log_test("Amadeus Flight Search - Luxury Features", False, response)
+            
+            return True
+        else:
+            log_test("Amadeus Flight Search", False, response)
+            return False
+    except Exception as e:
+        log_test("Amadeus Flight Search", False, error=str(e))
+        return False
+
+def test_amadeus_hotel_search():
+    """Test Amadeus hotel search endpoint"""
+    try:
+        # Sample hotel search for Goa
+        hotel_search_data = {
+            "city_code": "GOA",
+            "check_in_date": (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d"),
+            "check_out_date": (datetime.now() + timedelta(days=37)).strftime("%Y-%m-%d"),
+            "adults": 2,
+            "rooms": 1,
+            "currency": "INR",
+            "max_results": 10
+        }
+        
+        response = requests.post(f"{BACKEND_URL}/amadeus/hotels/search", json=hotel_search_data)
+        
+        if response.status_code == 200 and "hotels" in response.json():
+            hotels = response.json().get("hotels", [])
+            log_test("Amadeus Hotel Search", True)
+            
+            # Verify Happy Paisa conversion
+            if hotels and "offers" in hotels[0] and hotels[0]["offers"] and "price" in hotels[0]["offers"][0] and "happy_paisa" in hotels[0]["offers"][0]["price"]:
+                hp_price = hotels[0]["offers"][0]["price"]["happy_paisa"]
+                if "amount" in hp_price and "conversion_rate" in hp_price and hp_price["conversion_rate"] == 1000:
+                    log_test("Amadeus Hotel Search - Happy Paisa Conversion", True)
+                else:
+                    log_test("Amadeus Hotel Search - Happy Paisa Conversion", False, response)
+            else:
+                log_test("Amadeus Hotel Search - Happy Paisa Conversion", False, response)
+            
+            # Verify luxury features
+            if hotels and "luxury_features" in hotels[0]:
+                log_test("Amadeus Hotel Search - Luxury Features", True)
+            else:
+                log_test("Amadeus Hotel Search - Luxury Features", False, response)
+            
+            return True
+        else:
+            log_test("Amadeus Hotel Search", False, response)
+            return False
+    except Exception as e:
+        log_test("Amadeus Hotel Search", False, error=str(e))
+        return False
+
+def test_amadeus_destinations_search():
+    """Test Amadeus destinations search endpoint"""
+    try:
+        # Sample destinations search for popular cities
+        destinations_search_data = {
+            "keyword": "Mumbai",
+            "max_results": 10
+        }
+        
+        response = requests.post(f"{BACKEND_URL}/amadeus/destinations/search", json=destinations_search_data)
+        
+        if response.status_code == 200 and "destinations" in response.json():
+            destinations = response.json().get("destinations", [])
+            log_test("Amadeus Destinations Search", True)
+            
+            # Verify luxury insights
+            if destinations and "luxury_insights" in destinations[0]:
+                log_test("Amadeus Destinations Search - Luxury Insights", True)
+            else:
+                log_test("Amadeus Destinations Search - Luxury Insights", False, response)
+            
+            return True
+        else:
+            log_test("Amadeus Destinations Search", False, response)
+            return False
+    except Exception as e:
+        log_test("Amadeus Destinations Search", False, error=str(e))
+        return False
+
+def test_amadeus_popular_routes():
+    """Test Amadeus popular routes endpoint"""
+    try:
+        response = requests.get(f"{BACKEND_URL}/amadeus/flights/popular-routes")
+        
+        if response.status_code == 200 and "popular_routes" in response.json():
+            routes = response.json().get("popular_routes", [])
+            log_test("Amadeus Popular Routes", True)
+            
+            # Verify Happy Paisa conversion
+            if routes and "starting_price" in routes[0] and "hp" in routes[0]["starting_price"]:
+                log_test("Amadeus Popular Routes - Happy Paisa Pricing", True)
+            else:
+                log_test("Amadeus Popular Routes - Happy Paisa Pricing", False, response)
+            
+            # Verify luxury score
+            if routes and "luxury_score" in routes[0]:
+                log_test("Amadeus Popular Routes - Luxury Score", True)
+            else:
+                log_test("Amadeus Popular Routes - Luxury Score", False, response)
+            
+            return True
+        else:
+            log_test("Amadeus Popular Routes", False, response)
+            return False
+    except Exception as e:
+        log_test("Amadeus Popular Routes", False, error=str(e))
+        return False
+
+def test_amadeus_api():
+    """Test all Amadeus API endpoints"""
+    try:
+        # Test Amadeus health
+        amadeus_health_ok = test_amadeus_health()
+        if not amadeus_health_ok:
+            return False
+        
+        # Test flight search
+        flight_search_ok = test_amadeus_flight_search()
+        if not flight_search_ok:
+            return False
+        
+        # Test hotel search
+        hotel_search_ok = test_amadeus_hotel_search()
+        if not hotel_search_ok:
+            return False
+        
+        # Test destinations search
+        destinations_search_ok = test_amadeus_destinations_search()
+        if not destinations_search_ok:
+            return False
+        
+        # Test popular routes
+        popular_routes_ok = test_amadeus_popular_routes()
+        if not popular_routes_ok:
+            return False
+        
+        return True
+    
+    except Exception as e:
+        log_test("Amadeus API", False, error=str(e))
+        return False
+
+def run_tests():
+    """Run all tests"""
+    print("Starting API tests...")
+    print(f"Backend URL: {BACKEND_URL}")
+    
+    # Test health check
+    health_ok = test_health_check()
+    if not health_ok:
+        print("Health check failed. Aborting tests.")
+        return
+    
+    # Test Amadeus API
+    amadeus_ok = test_amadeus_api()
+    if not amadeus_ok:
+        print("Amadeus API tests failed.")
+    else:
+        print("Amadeus API tests passed successfully!")
+    
+    # Print summary
+    print("\nTest Summary:")
+    print(f"Total tests: {test_results['passed'] + test_results['failed']}")
+    print(f"Passed: {test_results['passed']}")
+    print(f"Failed: {test_results['failed']}")
+    
+    if test_results['failed'] == 0:
+        print("\nAll tests passed successfully!")
+    else:
+        print(f"\n{test_results['failed']} tests failed.")
+
 if __name__ == "__main__":
     run_tests()
