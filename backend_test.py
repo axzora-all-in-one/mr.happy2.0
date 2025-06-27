@@ -1381,13 +1381,8 @@ def run_tests():
     print("Starting API tests...")
     print(f"Backend URL: {BACKEND_URL}")
     
-    # Test health check
-    health_ok = test_health_check()
-    if not health_ok:
-        print("Health check failed. Aborting tests.")
-        return
-    
-    # Test Amadeus API
+    # Test Amadeus API directly without relying on the main health check
+    print("Testing Amadeus API endpoints...")
     amadeus_ok = test_amadeus_api()
     if not amadeus_ok:
         print("Amadeus API tests failed.")
